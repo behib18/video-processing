@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+
+<!--@TODO site hay add kardane model baraye bacheha-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Texture</title>
+    <style>
+
+        body {
+        @include display(flex);
+        @include align-content(center);
+            color: #353535;
+            min-height: 100vh;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 4px;
+            text-align: center;
+            background-color: lightgreen;
+            margin: 0 auto;
+            overflow: hidden;
+
+        }
+
+        #web-gl {
+            height: 100%;
+            width: 100%;
+        }
+
+    </style>
+
+
+    <script type="text/javascript" src="three.js"></script>
+    <script type="text/javascript" src="OrbitControls.js"></script>
+    <script type="text/javascript" src="HDRCubeTextureLoader.js"></script>
+    <script type="text/javascript" src="OBJLoader.js"></script>
+    <script type="text/javascript" src="Tween.js"></script>
+    <script src="THREEx.KeyboardState.js"></script>
+    <script type="text/javascript" src="Group.js"></script>
+
+    <script src="DDSLoader.js"></script>
+    <script src="MTLLoader.js"></script>
+    <script src="OBJLoader.js"></script>
+    <script src="Group.js"></script>
+
+</head>
+<body>
+
+
+<div id="web-gl">
+</div>
+
+<script id="scriptScene0" type="text/javascript">
+
+    //  Height and Width Variables
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+
+    //  Basic Variables
+    var camera, renderer, scene;
+    var listener = new THREE.AudioListener();
+    var sound = new THREE.Audio( listener );
+    ///coin
+    var coin1 = new THREE.Mesh();
+    var coin2 = new THREE.Mesh();
+    var coin3 = new THREE.Mesh();
+    var coin4 = new THREE.Mesh();
+    var coin5 = new THREE.Mesh();
+    var coin6 = new THREE.Mesh();
+
+    var coconut1 = new THREE.Mesh();
+    var coconut2 = new THREE.Mesh();
+    var coconut3 = new THREE.Mesh();
+    var coconut4 = new THREE.Mesh();
+    var coconut5 = new THREE.Mesh();
+    var coconut6 = new THREE.Mesh();
+    var coconut7 = new THREE.Mesh();
+    var coconut8 = new THREE.Mesh();
+    var coconut9 = new THREE.Mesh();
+    var coconut10 = new THREE.Mesh();
+    var coconut11 = new THREE.Mesh();
+    var coconut12 = new THREE.Mesh();
+    //  Controls Variable
+    var controls;
+   // var wireMaterial;
+    var tween;
+    var car = new THREE.Mesh() ;
+    var roadObj = new THREE.Mesh();
+
+    var target = {x: 0, y: 0, z: 0};
+    var keyboard = new THREEx.KeyboardState();
+    var clock = new THREE.Clock();
+    var group = new THREE.Group();
+    var currentYSpeed = 0;
+    init();
+    animate();
+
+
+    //  Once everything is loaded, we run our Three.js stuff.
+    function init() {
+
+      //  var carGeometry ;
+
+        scene = new THREE.Scene();
+
+        //  Cube mapping first method
+
+        // var path = "texture/";
+        // var format = '.jpg';
+        // var urls = [
+        // path + 'download (4)' + format, path + 'download (4)' + format,
+        // path + 'download (4)' + format, path + 'download (4)' + format,
+        // path + 'download (4)' + format, path + 'download (4)' + format
+        // ];
+        // var reflectionCube = new THREE.CubeTextureLoader().load( urls );
+        // reflectionCube.format = THREE.RGBFormat;
+        // scene.background = reflectionCube;
+        //
+        //
+        // // Cube mapping second method
+        // var reflectionCube = new THREE.CubeTextureLoader()
+        //     .setPath('texture/')
+        //     .load(['download (4).jpg', 'download (4).jpg', 'download (4).jpg', 'download (4).jpg', 'download (4).jpg', 'download (4).jpg']);
+        // reflectionCube.format = THREE.RGBFormat;
+        // scene.background = reflectionCube;
+
+        //  Create a camera, which defines where we're looking at.
+        var skyGeo = new THREE.SphereGeometry(5000, 25, 25);
+        var skytexture = new THREE.TextureLoader().load('texture/sky.jpg');
+        var material = new THREE.MeshPhongMaterial({
+            map: skytexture,
+        });
+        var sky = new THREE.Mesh(skyGeo, material);
+        sky.material.side = THREE.BackSide;
+        scene.add(sky);
+
+
+        camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 10000);
+        //  camera1 = new THREE.PerspectiveCamera(55, width / height, 0.1, 10000);
+        //  Fog(color,near,far)
+        //  scene.fog = new THREE.Fog(0xefd1b5, 0.1, 2000);
+
+        //  Create a render and set the size
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setClearColor(new THREE.Color(0x000000));
+        renderer.setSize(width, height);
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        //  Enable animation loop when using damping or autorotation
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.25;
+        controls.enableZoom = false;
+
+        //  Position and point the camera to the center of the scene
+        camera.position.x = 0;
+        camera.position.y = 100;
+        camera.position.z = 800;
+        camera.lookAt(car);
+
+
+        //  Add the output of the renderer to the html element
+        document.getElementById("web-gl").appendChild(renderer.domElement);
+        window.addEventListener("keydown", onDocumentKeyDown, false);
+        //  Surface
+        var textureSurface = new THREE.TextureLoader().load('texture/images (2).jpg');
+        textureSurface.repeat.set(4, 500);
+        textureSurface.wrapS = THREE.RepeatWrapping;
+        textureSurface.wrapT = THREE.RepeatWrapping;
+        textureSurface.magFilter = THREE.LinearFilter;
+        textureSurface.minFilter = THREE.LinearMipMapLinearFilter;
+
+        var surface = new THREE.PlaneGeometry(1000, 100000);
+        var surfaceMaterial = new THREE.MeshPhongMaterial({
+            color: 0xccccff,
+            side: THREE.DoubleSide,
+            map: textureSurface
+        });
+        surfaceMesh = new THREE.Mesh(surface, surfaceMaterial);
+        surfaceMesh.rotateX(Math.PI / 2);
+        surfaceMesh.position.y = 0;
+        surfaceMesh.position.z = 0;
+        scene.add(surfaceMesh.clone());
+
+        //  Road Texture
+        var textureRoad = new THREE.TextureLoader().load('texture/Seamless-Road-Texture1.jpg');
+
+        textureRoad.repeat.set(2, 15);
+        textureRoad.wrapS = THREE.RepeatWrapping;
+        textureRoad.wrapT = THREE.RepeatWrapping;
+        textureRoad.magFilter = THREE.LinearFilter;
+        textureRoad.minFilter = THREE.LinearMipMapLinearFilter;
+
+        var road = new THREE.PlaneGeometry(500, 100000);
+        var roadMaterial = new THREE.MeshPhongMaterial({color: 0xcccccc, side: THREE.DoubleSide, map: textureRoad});
+        var roadMesh = new THREE.Mesh(road, roadMaterial);
+        roadMesh.rotateX(Math.PI / 2);
+        roadMesh.position.y = 12;
+        roadMesh.position.z = 0;
+        roadObj = roadMesh.clone();
+        // scene.add(roadObj);
+        //camera.lookAt(roadMesh);
+
+        /*    //  Sidewalk Texture
+            var textureSideWalk = new THREE.TextureLoader().load('texture/Seamless-Road-Texture1.jpg');
+            textureSideWalk.repeat.set(1, 100);
+            textureSideWalk.wrapS = THREE.RepeatWrapping;
+            textureSideWalk.wrapT = THREE.RepeatWrapping;
+            textureSideWalk.magFilter = THREE.NearestFilter;
+            textureSideWalk.minFilter = THREE.NearestFilter;
+
+            var sideWalk = new THREE.PlaneGeometry(20, 1350);
+            var sideWalkMaterial = new THREE.MeshPhongMaterial({
+                color: 0xcccccc,
+                side: THREE.DoubleSide,
+                map: textureSideWalk
+            });
+
+            var sideWalkMesh = new THREE.Mesh(sideWalk, sideWalkMaterial);
+            sideWalkMesh.rotateX(Math.PI / 2);
+            sideWalkMesh.position.y = -49;
+            sideWalkMesh.position.z = -300;
+            sideWalkMesh.position.x = -45;
+            scene.add(sideWalkMesh);
+
+            var sideWalkSecond = sideWalkMesh.clone();
+            sideWalkSecond.position.x = +20;
+            scene.add(sideWalkSecond);*/
+
+        //  Pavement
+        // var textureBox = new THREE.TextureLoader().load('texture/Brick-Texture2.jpg');
+        // textureBox.repeat.set(2, 110);
+        // textureBox.wrapS = THREE.RepeatWrapping;
+        // textureBox.wrapT = THREE.RepeatWrapping;
+        // textureBox.magFilter = THREE.LinearFilter;
+        // textureBox.minFilter = THREE.LinearFilter;
+        //
+        // var boxGeometry = new THREE.BoxGeometry(3, 5, 1350);
+        // var boxMaterial = new THREE.MeshPhongMaterial({color: 0xcccccc, side: THREE.DoubleSide, map: textureBox});
+        // var box = new THREE.Mesh(boxGeometry, boxMaterial);
+        // box.position.y = -48;
+        // box.position.z = -300;
+        // box.position.x = -12.5;
+        // scene.add(box);
+
+
+        // ObjectLoader
+        // Car.json
+
+        var objectLoader = new THREE.ObjectLoader();
+     //  wireMaterial = new THREE.MeshBasicMaterial({color: 0x000000, wireframe: true});
+
+        objectLoader.load("objects/porsche-cayman.json", function (obj) {
+            setTimeout(() => {
+                console.clear();
+            }, 500);
+
+            obj.position.y = 11;
+            obj.position.z = 500;
+            obj.position.x = 0;
+            obj.scale.set(40, 30, 40);
+            car = obj.clone();
+            camera.add( listener );
+          //  te a global audio source
+
+
+            var audioLoader = new THREE.AudioLoader();
+            audioLoader.load( 'sound/Camaro.mp3', function( buffer ) {
+                sound.setBuffer( buffer );
+                sound.setLoop( true );
+                sound.setVolume( 10 );
+
+            });
+            scene.add(car);
+            // //
+
+            // tween = new TWEEN.Tween(car.position).to(target, 5000);
+            // tween.delay(200);
+            // tween.easing(TWEEN.Easing.Quartic.InOut);
+
+        });
+
+
+        //  coin.json
+        var objectLoader = new THREE.ObjectLoader();
+        objectLoader.load("objects/coin.json", function (obj) {
+            var obj1 = obj.clone();
+            var obj2 = obj.clone();
+            var obj3 = obj.clone();
+            var obj4 = obj.clone();
+            var obj5 = obj.clone();
+
+
+            obj.position.y = 27;
+            obj.position.z = -850;
+            obj.position.x = 85;
+            obj.scale.set(10, 10, 10);
+            coin1 = obj.clone();
+           // scene.add(coin1);
+
+
+            obj1.position.y = 27;
+            obj1.position.z = -7050;
+            obj1.position.x = -85;
+            obj1.scale.set(9, 9, 9);
+            coin2=obj1.clone();
+            // scene.add(coin2);
+
+
+            obj2.position.y = 27;
+            obj2.position.z = -18000;
+            obj2.position.x =-85;
+            obj2.scale.set(9, 9, 9);
+            coin3=obj2.clone();
+            // scene.add(coin3);
+            //
+            obj3.position.y = 27;
+            obj3.position.z = -27000;
+            obj3.position.x =45;
+            obj3.scale.set(9, 9, 9);
+            coin4=obj3.clone();
+            // scene.add(coin4);
+            //
+            //
+            obj4.position.y = 27;
+            obj4.position.z = -45000;
+            obj4.position.x =-45;
+            obj4.scale.set(9, 9, 9);
+            coin5=obj4.clone();
+            // scene.add(coin5);
+            //
+            obj5.position.y = 27;
+            obj5.position.z = -45000;
+            obj5.position.x =-45;
+            obj5.scale.set(10, 10, 10);
+            coin6=obj5.clone();
+            // scene.add(coin6);
+            //
+
+            group.add( roadObj );
+            group.add( coin1 );
+            group.add( coin2 );
+            group.add( coin3 );
+            group.add( coin4 );
+            group.add( coin5 );
+            group.add( coin6 );
+            group.add( coin6 );
+
+
+        });
+//tree
+        var objectLoader = new THREE.ObjectLoader();
+        objectLoader.load("objects/coconut-tree.json", function (obj) {
+            var obj1 = obj.clone();
+            var obj2 = obj.clone();
+            var obj3 = obj.clone();
+            var obj4 = obj.clone();
+            var obj5 = obj.clone();
+            var obj6 = obj.clone();
+            var obj7 = obj.clone();
+            var obj8 = obj.clone();
+            var obj9 = obj.clone();
+            var obj10 = obj.clone();
+            var obj11= obj.clone();
+            var obj12= obj.clone();
+
+            obj1.position.y = 0;
+            obj1.position.z = -250;
+            obj1.position.x = -200;
+            obj1.scale.set(0.35, 0.35, 0.35);
+            coconut1 = obj1.clone();
+           // scene.add(coconut1);
+
+            obj2.position.y = 0;
+            obj2.position.z = -400;
+            obj2.position.x = -660;
+            obj2.scale.set(0.35, 0.35, 0.35);
+            coconut2 = obj2.clone();
+          //  scene.add( coconut2);
+            obj3.position.y = 0;
+            obj3.position.z = -1400;
+            obj3.position.x = -660;
+            obj3.scale.set(0.35, 0.35, 0.35);
+            coconut3 = obj3.clone();
+            // obj2.position.y = -49;
+            // obj2.position.z = -150;
+            // obj2.position.x = 5;
+            // obj2.scale.set(4, 4, 4);
+            // scene.add(obj2);
+            obj4.position.y = 0;
+            obj4.position.z = -2000;
+            obj4.position.x = -200;
+            obj4.scale.set(0.35, 0.35, 0.35);
+            coconut4 = obj4.clone();
+
+            obj5.position.y = 0;
+            obj5.position.z = -2000;
+            obj5.position.x = -660;
+            obj5.scale.set(0.35, 0.35, 0.35);
+            coconut5 = obj5.clone();
+
+            obj6.position.y = 0;
+            obj6.position.z = -2700;
+            obj6.position.x = -660;
+            obj6.scale.set(0.35, 0.35, 0.35);
+            coconut6 = obj6.clone();
+
+            obj7.position.y = 0;
+            obj7.position.z = -2700;
+            obj7.position.x = -200;
+            obj7.scale.set(0.35, 0.35, 0.35);
+            coconut7= obj7.clone();
+
+            obj8.position.y = 0;
+            obj8.position.z = -3500;
+            obj8.position.x = -660;
+            obj8.scale.set(0.35, 0.35, 0.35);
+            coconut8 = obj8.clone();
+
+            obj9.position.y = 0;
+            obj9.position.z = -3600;
+            obj9.position.x = -200;
+            obj9.scale.set(0.35, 0.35, 0.35);
+            coconut9 = obj9.clone();
+
+            obj10.position.y = 0;
+            obj10.position.z = -4200;
+            obj10.position.x = -200;
+            obj10.scale.set(0.35, 0.35, 0.35);
+            coconut10 = obj10.clone();
+
+            obj11.position.y = 0;
+            obj11.position.z = -4100;
+            obj11.position.x = -660;
+            obj11.scale.set(0.35, 0.35, 0.35);
+            coconut11 = obj11.clone();
+
+            obj12.position.y = 0;
+            obj12.position.z = -4500;
+            obj12.position.x = -200;
+            obj12.scale.set(0.35, 0.35, 0.35);
+            coconut12 = obj12.clone();
+            group.add( coconut1 );
+            group.add( coconut2 );
+            group.add( coconut3 );
+            group.add( coconut4 );
+            group.add( coconut5 );
+            group.add( coconut6 );
+            group.add( coconut7 );
+            group.add( coconut8 );
+            group.add( coconut9 );
+            group.add( coconut10 );
+            group.add( coconut11 );
+            group.add( coconut12 );
+            scene.add( group );
+        });
+
+
+
+
+
+
+
+        //  Add  ambient lighting
+        var ambiColor = "#ffffff";
+        var ambientLight = new THREE.AmbientLight(ambiColor, 0.015);
+        scene.add(ambientLight);
+
+
+
+
+        var spotLight = new THREE.SpotLight(0xAA5667);
+        spotLight.angle = 0.8;
+
+        spotLight.position.set(300, 500, 300);
+        scene.add(spotLight);
+
+
+    }
+
+    function animate() {
+        coin1.rotation.y += 0.04;
+         coin2.rotation.y += 0.04;
+        coin3.rotation.y += 0.04;
+        coin4.rotation.y += 0.04;
+        coin5.rotation.y += 0.04;
+        coin6.rotation.y += 0.04;
+
+        renderer.render(scene, camera);
+        //    TWEEN.update();
+        controls.update();
+        requestAnimationFrame(animate);
+    }
+
+ //   var raycaster = new THREE.Raycaster();
+    function onDocumentKeyDown(event) {
+        //  var keyCode = event.which;
+        // up
+        if (event.keyCode == 83) {
+            group.position.z -= currentYSpeed;
+            sound.play();
+            // down
+        } else if (event.keyCode == 87) {
+            currentYSpeed = currentYSpeed < 100 ? currentYSpeed + 1.5 : currentYSpeed;
+            group.position.z += currentYSpeed;
+            // left
+        } else if (event.keyCode == 65) {
+            group.position.z += currentYSpeed;
+            car.position.x -= 2;
+            camera.position.x -= 2;
+            // right
+        } else if (event.keyCode == 68) {
+            group.position.z += currentYSpeed;
+            car.position.x += 2;
+            camera.position.x += 2;
+        }
+
+        let hitX, hitZ;
+        hitX = hitZ = false;
+        let { abs, random } = Math;
+        let groupPosZ = group.position.z - 580;
+        let coins = [coin1, coin2, coin3, coin4, coin5, coin6];
+        var i=0;
+
+        let hit = coins.some(c => {
+            if (abs(c.position.z) >= abs(groupPosZ) && abs(c.position.z) <= (abs(groupPosZ) + 150)) {
+                // console.log('hitz')
+                hitZ = true;
+                coins[i].visible = false;
+
+                if (abs(c.position.x) >= abs(car.position.x) - 35 && abs(c.position.x) <= abs(car.position.x) + 35) {
+                    // console.log('hitx')
+                    hitX = true;
+                    coins[i].visible = false;
+                }
+            }
+
+            if (hitX && hitZ)
+                return true;
+            coins.visible = false;
+
+
+
+            i+=1;
+        });
+
+        if (hit) {
+          //  coins.visible = false;
+            console.log('%c hit!!!', `color: rgb(${random() * 255}, ${random() * 255}, ${random() * 255});`);
+        }
+    }
+
+
+</script>
+</body>
+</html>
